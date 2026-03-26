@@ -2,14 +2,14 @@
 
 A lightweight Go service that monitors Gmail and Google Calendar and sends Telegram messages when you receive a new email or have a meeting coming up.
 
-Designed to run on a Raspberry Pi 4 with DietPi as a systemd service.
+Designed to run on a Raspberry Pi 4 with DietPi as a systemd oneshot service triggered by a timer every minute.
 
 ## Features
 
 - New email in Gmail inbox → Telegram message with sender and subject
 - Upcoming calendar meeting → Telegram message with time remaining and title
-- Configurable polling interval and meeting warning window
-- Minimal resource usage — single binary, no runtime dependencies
+- Configurable meeting warning window
+- Minimal resource usage — single binary, exits after each run, no long-running process
 
 ## Prerequisites
 
@@ -41,13 +41,11 @@ Designed to run on a Raspberry Pi 4 with DietPi as a systemd service.
 ```bash
 mkdir -p ~/.notifier
 cp config.yaml ~/.notifier/config.yaml
-cp /path/to/downloaded-credentials.json ~/.notifier_credentials.json
 ```
 
 Edit `~/.notifier/config.yaml`:
 
 ```yaml
-check_interval_minutes: 5
 meeting_warning_minutes: 15
 telegram_token: "YOUR_BOT_TOKEN"
 telegram_chat_id: "YOUR_CHAT_ID"
@@ -66,7 +64,7 @@ cp notifier ~/bin/notifier
 
 ### 4. First run (OAuth)
 
-Run once manually — it will print a Google OAuth URL. Open it in a browser, authorize, and paste the code back:
+Run once manually on the Pi — it will print a Google OAuth URL. Open it in a browser on your PC, authorize, and paste the code back into the terminal:
 
 ```bash
 NOTIFIER_CONFIG=~/.notifier/config.yaml ~/bin/notifier
@@ -74,28 +72,41 @@ NOTIFIER_CONFIG=~/.notifier/config.yaml ~/bin/notifier
 
 This creates the token file. Subsequent runs are fully automatic.
 
-### 5. Install as systemd service
+### 5. Install as systemd service + timer
 
 ```bash
 sudo cp notifier.service /etc/systemd/system/
+sudo cp notifier.timer /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now notifier
+sudo systemctl enable --now notifier.timer
+```
+
+Check the timer status:
+
+```bash
+systemctl status notifier.timer
+systemctl list-timers notifier.timer
 ```
 
 Check logs:
 
 ```bash
-journalctl -u notifier -f
+journalctl -u notifier.service -f
+```
+
+Trigger a manual run:
+
+```bash
+systemctl start notifier.service
 ```
 
 ## Configuration Reference
 
-| Key | Default | Description |
-|---|---|---|
-| `check_interval_minutes` | `5` | How often to poll Gmail and Calendar |
-| `meeting_warning_minutes` | `15` | Warn about meetings starting within this window |
-| `telegram_token` | — | Telegram bot token from @BotFather |
-| `telegram_chat_id` | — | Your Telegram user/chat ID |
-| `state_file` | — | Path to persist state between runs |
-| `credentials_file` | — | Path to Google OAuth credentials JSON |
-| `token_file` | — | Path to store the OAuth token after first auth |
+| Key | Description |
+|---|---|
+| `meeting_warning_minutes` | Warn about meetings starting within this window |
+| `telegram_token` | Telegram bot token from @BotFather |
+| `telegram_chat_id` | Your Telegram user/chat ID |
+| `state_file` | Path to persist state between runs |
+| `credentials_file` | Path to Google OAuth credentials JSON |
+| `token_file` | Path to store the OAuth token after first auth |

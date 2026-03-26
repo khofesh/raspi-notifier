@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Gmail & Calendar Notifier Every 1 Minute
+Requires=notifier.service
+
+[Timer]
+OnCalendar=*:0/1
+Persistent=true
+
+[Install]
+WantedBy=timers.target

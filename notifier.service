@@ -4,12 +4,14 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-Type=simple
+Type=oneshot
 User=fahmi
 ExecStart=/home/fahmi/bin/notifier
 Environment=NOTIFIER_CONFIG=/home/fahmi/.notifier/config.yaml
-Restart=on-failure
-RestartSec=30
+Restart=no
+TimeoutStartSec=60
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target

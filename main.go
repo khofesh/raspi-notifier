@@ -4,15 +4,11 @@ import (
 	"context"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	CheckInterval      int    `yaml:"check_interval_minutes"`
 	MeetingWarningMins int    `yaml:"meeting_warning_minutes"`
 	TelegramToken      string `yaml:"telegram_token"`
 	TelegramChatID     string `yaml:"telegram_chat_id"`
@@ -77,31 +73,8 @@ func check(ctx context.Context, cfg *Config) {
 
 func main() {
 	cfg := loadConfig()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-sigs
-		cancel()
-	}()
-
-	log.Printf("notifier started — checking every %d minute(s)", cfg.CheckInterval)
-
+	ctx := context.Background()
+	log.Println("notifier: running check")
 	check(ctx, cfg)
-
-	ticker := time.NewTicker(time.Duration(cfg.CheckInterval) * time.Minute)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			check(ctx, cfg)
-		case <-ctx.Done():
-			log.Println("shutting down")
-			return
-		}
-	}
+	log.Println("notifier: done")
 }
