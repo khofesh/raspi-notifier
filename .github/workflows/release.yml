@@ -11,9 +11,9 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6.3.0
         with:
           go-version-file: go.mod
 
@@ -24,6 +24,6 @@ jobs:
         run: go build -ldflags="-s -w" -o notifier-linux-arm64 .
 
       - name: Create release and upload binary
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.6.1
         with:
           files: notifier-linux-arm64
