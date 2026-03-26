@@ -63,15 +63,16 @@ func tokenFromFile(path string) (*oauth2.Token, error) {
 }
 
 func getTokenFromWeb(cfg *oauth2.Config) *oauth2.Token {
+	cfg.RedirectURL = "urn:ietf:wg:oauth:2.0:oob"
 	authURL := cfg.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	fmt.Printf("Open this URL in your browser and paste the code:\n%v\n\nCode: ", authURL)
+	fmt.Printf("Open this URL in your browser:\n%v\n\nPaste the code shown by Google here: ", authURL)
 
 	var code string
 	if _, err := fmt.Scan(&code); err != nil {
 		log.Fatalf("read auth code: %v", err)
 	}
 
-	tok, err := cfg.Exchange(context.Background(), code)
+	tok, err := cfg.Exchange(context.Background(), code, oauth2.SetAuthURLParam("redirect_uri", "urn:ietf:wg:oauth:2.0:oob"))
 	if err != nil {
 		log.Fatalf("exchange token: %v", err)
 	}
