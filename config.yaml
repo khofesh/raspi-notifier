@@ -1,0 +1,7 @@
+check_interval_minutes: 5
+meeting_warning_minutes: 15
+telegram_token: "YOUR_BOT_TOKEN"
+telegram_chat_id: "YOUR_CHAT_ID"
+state_file: "/home/fahmi/.notifier_state.json"
+credentials_file: "/home/fahmi/.notifier_credentials.json"
+token_file: "/home/fahmi/.notifier_token.json"

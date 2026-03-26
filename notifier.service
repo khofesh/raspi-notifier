@@ -1,0 +1,15 @@
+[Unit]
+Description=Gmail & Calendar Telegram Notifier
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=fahmi
+ExecStart=/home/fahmi/bin/notifier
+Environment=NOTIFIER_CONFIG=/home/fahmi/.notifier/config.yaml
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
