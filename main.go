@@ -15,6 +15,7 @@ type Config struct {
 	StateFile          string `yaml:"state_file"`
 	CredentialsFile    string `yaml:"credentials_file"`
 	TokenFile          string `yaml:"token_file"`
+	LogFile            string `yaml:"log_file"`
 }
 
 func loadConfig() *Config {
@@ -71,10 +72,22 @@ func check(ctx context.Context, cfg *Config) {
 	saveState(cfg.StateFile, state)
 }
 
+func setupLogger(cfg *Config) {
+	if cfg.LogFile == "" {
+		return
+	}
+	f, err := os.OpenFile(cfg.LogFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		log.Printf("warning: could not open log file %s: %v — logging to stderr", cfg.LogFile, err)
+		return
+	}
+	log.SetOutput(f)
+	log.SetFlags(log.Ldate | log.Ltime)
+}
+
 func main() {
 	cfg := loadConfig()
+	setupLogger(cfg)
 	ctx := context.Background()
-	log.Println("notifier: running check")
 	check(ctx, cfg)
-	log.Println("notifier: done")
 }

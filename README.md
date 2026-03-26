@@ -50,8 +50,9 @@ meeting_warning_minutes: 15
 telegram_token: "YOUR_BOT_TOKEN"
 telegram_chat_id: "YOUR_CHAT_ID"
 state_file: "/home/fahmi/.notifier/state.json"
-credentials_file: "/home/fahmi/.notifier_credentials.json"
-token_file: "/home/fahmi/.notifier_token.json"
+credentials_file: "/home/fahmi/.notifier/credentials.json"
+token_file: "/home/fahmi/.notifier/token.json"
+log_file: "/home/fahmi/.notifier/notifier.log"
 ```
 
 ### 3. Build
@@ -110,3 +111,4 @@ systemctl start notifier.service
 | `state_file` | Path to persist state between runs |
 | `credentials_file` | Path to Google OAuth credentials JSON |
 | `token_file` | Path to store the OAuth token after first auth |
+| `log_file` | Path to append error/warning logs (falls back to stderr if unset) |

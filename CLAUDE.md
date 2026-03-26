@@ -33,7 +33,8 @@ notifier.timer   — systemd timer unit (runs every 1 minute)
 All config lives in `config.yaml` (path overridable via `NOTIFIER_CONFIG` env var):
 - `meeting_warning_minutes` — how far ahead to warn about meetings
 - `telegram_token` / `telegram_chat_id` — Telegram bot credentials
-- `state_file` / `credentials_file` / `token_file` — file paths
+- `state_file` / `credentials_file` / `token_file` / `log_file` — all under `~/.notifier/`
+- `log_file` — if set, errors and warnings are appended here; if unset or unopenable, falls back to stderr
 
 ## Build & Run
 ```bash

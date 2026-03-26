@@ -27,6 +27,7 @@ go.work.sum
 # bin folder
 bin
 raspi-notifier
+notifier
 
 # configs
 *.json
