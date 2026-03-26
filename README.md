@@ -32,8 +32,8 @@ Designed to run on a Raspberry Pi 4 with DietPi as a systemd oneshot service tri
 7. Click the download button (↓) next to the credential you just created
 8. Rename and place the file:
    ```bash
-   cp ~/Downloads/client_secret_*.json ~/.notifier_credentials.json
-   chmod 600 ~/.notifier_credentials.json
+   cp ~/Downloads/client_secret_*.json ~/.notifier/credentials.json
+   chmod 600 ~/.notifier/credentials.json
    ```
 
 ### 2. Configure
@@ -103,12 +103,12 @@ systemctl start notifier.service
 
 ## Configuration Reference
 
-| Key | Description |
-|---|---|
-| `meeting_warning_minutes` | Warn about meetings starting within this window |
-| `telegram_token` | Telegram bot token from @BotFather |
-| `telegram_chat_id` | Your Telegram user/chat ID |
-| `state_file` | Path to persist state between runs |
-| `credentials_file` | Path to Google OAuth credentials JSON |
-| `token_file` | Path to store the OAuth token after first auth |
-| `log_file` | Path to append error/warning logs (falls back to stderr if unset) |
+| Key                       | Description                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| `meeting_warning_minutes` | Warn about meetings starting within this window                   |
+| `telegram_token`          | Telegram bot token from @BotFather                                |
+| `telegram_chat_id`        | Your Telegram user/chat ID                                        |
+| `state_file`              | Path to persist state between runs                                |
+| `credentials_file`        | Path to Google OAuth credentials JSON                             |
+| `token_file`              | Path to store the OAuth token after first auth                    |
+| `log_file`                | Path to append error/warning logs (falls back to stderr if unset) |
