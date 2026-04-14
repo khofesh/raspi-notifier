@@ -34,7 +34,8 @@ func newGoogleServices(ctx context.Context, cfg *Config) (*gmail.Service, *calen
 		saveToken(cfg.TokenFile, token)
 	}
 
-	httpClient := oauthCfg.Client(ctx, token)
+	tokenSource := oauthCfg.TokenSource(ctx, token)
+	httpClient := oauth2.NewClient(ctx, tokenSource)
 
 	gmailSvc, err := gmail.NewService(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
@@ -44,6 +45,12 @@ func newGoogleServices(ctx context.Context, cfg *Config) (*gmail.Service, *calen
 	calSvc, err := calendar.NewService(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, nil, fmt.Errorf("calendar service: %w", err)
+	}
+
+	// Save the (possibly refreshed) token back to disk so the next
+	// oneshot invocation uses the latest access/refresh token.
+	if freshToken, err := tokenSource.Token(); err == nil {
+		saveToken(cfg.TokenFile, freshToken)
 	}
 
 	return gmailSvc, calSvc, nil
@@ -64,7 +71,7 @@ func tokenFromFile(path string) (*oauth2.Token, error) {
 
 func getTokenFromWeb(cfg *oauth2.Config) *oauth2.Token {
 	cfg.RedirectURL = "urn:ietf:wg:oauth:2.0:oob"
-	authURL := cfg.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	authURL := cfg.AuthCodeURL("state-token", oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	fmt.Printf("Open this URL in your browser:\n%v\n\nPaste the code shown by Google here: ", authURL)
 
 	var code string
