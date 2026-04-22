@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -39,7 +40,9 @@ func check(ctx context.Context, cfg *Config) {
 
 	gmailSvc, calSvc, err := newGoogleServices(ctx, cfg)
 	if err != nil {
-		log.Printf("google auth error: %v", err)
+		msg := fmt.Sprintf("google auth error: %v", err)
+		log.Print(msg)
+		tg.Send("❌ " + msg)
 		return
 	}
 
@@ -48,7 +51,9 @@ func check(ctx context.Context, cfg *Config) {
 	// Check Gmail
 	messages, newHistoryID, err := checkGmail(ctx, gmailSvc, state.GmailHistoryID)
 	if err != nil {
-		log.Printf("gmail error: %v", err)
+		msg := fmt.Sprintf("gmail error: %v", err)
+		log.Print(msg)
+		tg.Send("❌ " + msg)
 	} else {
 		for _, msg := range messages {
 			tg.Send("📧 New email from " + msg.From + "\nSubject: " + msg.Subject)
@@ -61,7 +66,9 @@ func check(ctx context.Context, cfg *Config) {
 	// Check Calendar
 	events, err := checkCalendar(ctx, calSvc, cfg.MeetingWarningMins, state.NotifiedEvents)
 	if err != nil {
-		log.Printf("calendar error: %v", err)
+		msg := fmt.Sprintf("calendar error: %v", err)
+		log.Print(msg)
+		tg.Send("❌ " + msg)
 	} else {
 		for _, ev := range events {
 			tg.Send("📅 Meeting in ~" + ev.StartsIn + ": " + ev.Summary)
